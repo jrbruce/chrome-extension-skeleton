@@ -4,18 +4,20 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const VersionFilePlugin = require('webpack-version-file-plugin');
 const CrxPlugin = require('crx-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const config = require('./config.js');
 const pkg = require('../package.json');
 
 const appName = `${pkg.name}-${pkg.version}`;
 
+process.traceDeprecation = true;
+
 
 module.exports = _.merge({}, config, {
   output: {
     path: path.resolve(__dirname, '../build/prod'),
   },
-
   // devtool: 'eval',
   plugins: [
     new CopyWebpackPlugin([
@@ -35,19 +37,9 @@ module.exports = _.merge({}, config, {
       outputPath: '../build',
       name: appName
     }),
-    new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' }),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        screw_ie8: true,
-        warnings: false
-      },
-      mangle: {
-        screw_ie8: true
-      },
-      output: {
-        comments: false,
-        screw_ie8: true
-      }
+    new UglifyJsPlugin({
+      uglifyOptions: {}
     }),
+    new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"production"' }),
   ]
 });
